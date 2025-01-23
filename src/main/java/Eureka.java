@@ -13,6 +13,9 @@ public class Eureka {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        String[] tasks = new String[100];
+        int taskCount = 0;
+
         String logo = "  ______ _    _ _____  ______ _   __      __       \n"
                     + " |  ____| |  | |  __ \\|  ____| | / /    / /\\ \\     \n"
                     + " | |__  | |  | | |__) | |__  |  / /    / /__\\ \\     \n"
@@ -31,10 +34,17 @@ public class Eureka {
                 System.out.println("  Bye. Hope to see you again soon!");
                 printLine();
                 break;
+            } else if (input.equals("list"))  {
+                printLine();
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println("  " + (i + 1) + ". " + tasks[i]);
+                }
+                printLine();
             } else {
                 printLine();
-                System.out.print("  ");
-                System.out.println(input);
+                tasks[taskCount] = input;
+                taskCount++;
+                System.out.println("  added: " + input);
                 printLine();
             }
         }
