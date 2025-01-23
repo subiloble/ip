@@ -14,6 +14,7 @@ public class Eureka {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String[] tasks = new String[100];
+        boolean[] isDone = new boolean[100];
         int taskCount = 0;
 
         String logo = "  ______ _    _ _____  ______ _   __      __       \n"
@@ -37,12 +38,32 @@ public class Eureka {
             } else if (input.equals("list"))  {
                 printLine();
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println("  " + (i + 1) + ". " + tasks[i]);
+                    String status = isDone[i] ? "[X]" : "[ ]";
+                    System.out.println("  " + (i + 1) + ". " + status + " " + tasks[i]);
                 }
                 printLine();
+            } else if (input.startsWith("mark ")) {
+                int taskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
+                if (taskNumber >= 0 && taskNumber < taskCount) {
+                    isDone[taskNumber] = true;
+                    printLine();
+                    System.out.println("  Nice! I've marked this task as done:");
+                    System.out.println("    [X] " + tasks[taskNumber]);
+                    printLine();
+                }
+            } else if (input.startsWith("unmark ")) {
+                int taskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
+                if (taskNumber >= 0 && taskNumber < taskCount) {
+                    isDone[taskNumber] = false;
+                    printLine();
+                    System.out.println("  OK, I've marked this task as not done yet:");
+                    System.out.println("    [ ] " + tasks[taskNumber]);
+                    printLine();
+                }
             } else {
                 printLine();
                 tasks[taskCount] = input;
+                isDone[taskCount] = false;
                 taskCount++;
                 System.out.println("  added: " + input);
                 printLine();
