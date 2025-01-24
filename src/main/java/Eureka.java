@@ -1,10 +1,6 @@
 import java.util.Scanner;
 import java.util.ArrayList;
 
-enum TaskType {
-    todo, deadline, event
-}
-
 enum Command {
     bye, list, mark, unmark, todo, deadline, event, delete, unknown
 }
