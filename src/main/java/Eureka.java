@@ -96,7 +96,7 @@ public class Eureka {
             return Command.mark;
         } else if (userInput.startsWith("unmark ")) {
             return Command.unmark;
-        } else if (userInput.startsWith("todo ")) {
+        } else if (userInput.startsWith("todo")) {
             return Command.todo;
         } else if (userInput.startsWith("deadline ")) {
             return Command.deadline;
@@ -167,7 +167,13 @@ public class Eureka {
                     break;
 
                 case todo:
-                    String todoDescription = input.substring(5);
+                    if (input.length()<6) {
+                        printLine();
+                        System.out.println("  A todo without a description doesn’t work. Try again with more details!");
+                        printLine();
+                        break;
+                    }
+                    String todoDescription = input.substring(6);
                     tasks[taskCount] = new ToDo(todoDescription);
                     taskCount++;
                     printLine();
@@ -206,7 +212,7 @@ public class Eureka {
 
                 default:
                     printLine();
-                    System.out.println("  I'm sorry, I don't understand that command.");
+                    System.out.println("  Sorry, I didn’t get that. Could you try something else?");
                     printLine();
                     break;
             }
