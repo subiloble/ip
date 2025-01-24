@@ -1,0 +1,10 @@
+deadline do homework /by no idea :-p
+list
+mark 1
+unmark 1
+list
+todo go hiking
+list
+event project meeting /from Mon 2pm /to 4pm
+ewefada
+bye
