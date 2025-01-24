@@ -1,11 +1,12 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 enum TaskType {
     todo, deadline, event
 }
 
 enum Command {
-    bye, list, mark, unmark, todo, deadline, event, unknown
+    bye, list, mark, unmark, todo, deadline, event, delete, unknown
 }
 
 abstract class Task {
@@ -102,6 +103,8 @@ public class Eureka {
             return Command.deadline;
         } else if (userInput.startsWith("event ")) {
             return Command.event;
+        } else if (userInput.startsWith("delete ")) {
+            return Command.delete;
         } else {
             return Command.unknown;
         }
@@ -109,7 +112,7 @@ public class Eureka {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100];
+        ArrayList<Task> tasks = new ArrayList<>();
         int taskCount = 0;
 
         String logo = "  ______ _    _ _____  ______ _   __      __       \n"
@@ -139,7 +142,7 @@ public class Eureka {
                     printLine();
                     System.out.println("  Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
-                        System.out.println("  " + (i + 1) + ". " + tasks[i]);
+                        System.out.println("  " + (i + 1) + ". " + tasks.get(i));
                     }
                     printLine();
                     break;
@@ -147,10 +150,10 @@ public class Eureka {
                 case mark:
                     int markTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
                     if (markTaskNumber >= 0 && markTaskNumber < taskCount) {
-                        tasks[markTaskNumber].markAsDone();
+                        tasks.get(markTaskNumber).markAsDone();
                         printLine();
                         System.out.println("  Nice! I've marked this task as done:");
-                        System.out.println("    " + tasks[markTaskNumber]);
+                        System.out.println("    " + tasks.get(markTaskNumber));
                         printLine();
                     }
                     break;
@@ -158,27 +161,27 @@ public class Eureka {
                 case unmark:
                     int unmarkTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
                     if (unmarkTaskNumber >= 0 && unmarkTaskNumber < taskCount) {
-                        tasks[unmarkTaskNumber].markAsNotDone();
+                        tasks.get(unmarkTaskNumber).markAsNotDone();
                         printLine();
                         System.out.println("  OK, I've marked this task as not done yet:");
-                        System.out.println("    " + tasks[unmarkTaskNumber]);
+                        System.out.println("    " + tasks.get(unmarkTaskNumber));
                         printLine();
                     }
                     break;
 
                 case todo:
-                    if (input.length()<6) {
+                    if (input.length()<5) {
                         printLine();
                         System.out.println("  A todo without a description doesn’t work. Try again with more details!");
                         printLine();
                         break;
                     }
-                    String todoDescription = input.substring(6);
-                    tasks[taskCount] = new ToDo(todoDescription);
+                    String todoDescription = input.substring(5);
+                    tasks.add(new ToDo(todoDescription));
                     taskCount++;
                     printLine();
                     System.out.println("  Got it. I've added this task:");
-                    System.out.println("    " + tasks[taskCount - 1]);
+                    System.out.println("    " + tasks.get(taskCount - 1));
                     System.out.println("  Now you have " + taskCount + " tasks in the list.");
                     printLine();
                     break;
@@ -187,11 +190,11 @@ public class Eureka {
                     String[] deadlineParts = input.substring(9).split(" /by ");
                     String deadlineDescription = deadlineParts[0];
                     String deadlineBy = deadlineParts[1];
-                    tasks[taskCount] = new Deadline(deadlineDescription, deadlineBy);
+                    tasks.add(new Deadline(deadlineDescription, deadlineBy));
                     taskCount++;
                     printLine();
                     System.out.println("  Got it. I've added this task:");
-                    System.out.println("    " + tasks[taskCount - 1]);
+                    System.out.println("    " + tasks.get(taskCount - 1));
                     System.out.println("  Now you have " + taskCount + " tasks in the list.");
                     printLine();
                     break;
@@ -201,13 +204,30 @@ public class Eureka {
                     String eventDescription = eventParts[0];
                     String eventFrom = eventParts[1];
                     String eventTo = eventParts[2];
-                    tasks[taskCount] = new Event(eventDescription, eventFrom, eventTo);
+                    tasks.add(new Event(eventDescription, eventFrom, eventTo));
                     taskCount++;
                     printLine();
                     System.out.println("  Got it. I've added this task:");
-                    System.out.println("    " + tasks[taskCount - 1]);
+                    System.out.println("    " + tasks.get(taskCount - 1));
                     System.out.println("  Now you have " + taskCount + " tasks in the list.");
                     printLine();
+                    break;
+
+                case delete:
+                    int deleteTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
+                    if (deleteTaskNumber < 0 || deleteTaskNumber >= tasks.size()) {
+                        printLine();
+                        System.out.println("Oops! That task doesn’t exist. Try a valid task number.");
+                        printLine();
+                    } else {
+                        Task removedTask = tasks.remove(deleteTaskNumber);
+                        printLine();
+                        System.out.println("  Noted. I've removed this task:");
+                        System.out.println("    " + removedTask);
+                        System.out.println("  Now you have " + tasks.size() + " tasks in the list.");
+                        printLine();
+                        taskCount--;
+                    }
                     break;
 
                 default:
