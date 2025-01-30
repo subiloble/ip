@@ -2,78 +2,13 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 enum Command {
-    bye, list, mark, unmark, todo, deadline, event, delete, unknown
-}
-
-abstract class Task {
-    String description;
-    boolean isDone;
-
-    public Task(String description) {
-        this.description = description;
-        this.isDone = false;
-    }
-
-    public void markAsDone() {
-        this.isDone = true;
-    }
-
-    public void markAsNotDone() {
-        this.isDone = false;
-    }
-
-    public String getStatus() {
-        return (isDone ? "[X]" : "[ ]");
-    }
-
-    @Override
-    public String toString() {
-        return getStatus() + " " + description;
-    }
-}
-
-class ToDo extends  Task {
-    public ToDo(String description) {
-        super(description);
-    }
-
-    @Override
-    public String toString() {
-        return "[T]" + super.toString();
-    }
-}
-
-class Deadline extends Task {
-    String by;
-
-    public Deadline(String description, String by) {
-        super(description);
-        this.by = by;
-    }
-
-    @Override
-    public String toString() {
-        return "[D]" + super.toString() + " (by: " + by + ")";
-    }
-}
-
-class Event extends Task {
-    String from;
-    String to;
-
-    public Event(String description, String from, String to) {
-        super(description);
-        this.from = from;
-        this.to = to;
-    }
-
-    @Override
-    public String toString() {
-        return "[E]" + super.toString() + " (from: " + from + " to: " + to + ")";
-    }
+    BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, UNKNOWN
 }
 
 public class Eureka {
+    private static final String FILE_PATH = "./data/eureka.txt";
+    private static final Storage storage = new Storage(FILE_PATH);
+
     static void printLine() {
         System.out.print("  ");
         for(int i = 0; i < 50; i++)
@@ -86,30 +21,29 @@ public class Eureka {
 
     static Command parseCommand(String userInput) {
         if (userInput.equals("bye")) {
-            return Command.bye;
+            return Command.BYE;
         } else if (userInput.equals("list")) {
-            return Command.list;
+            return Command.LIST;
         } else if (userInput.startsWith("mark ")) {
-            return Command.mark;
+            return Command.MARK;
         } else if (userInput.startsWith("unmark ")) {
-            return Command.unmark;
+            return Command.UNMARK;
         } else if (userInput.startsWith("todo")) {
-            return Command.todo;
+            return Command.TODO;
         } else if (userInput.startsWith("deadline ")) {
-            return Command.deadline;
+            return Command.DEADLINE;
         } else if (userInput.startsWith("event ")) {
-            return Command.event;
+            return Command.EVENT;
         } else if (userInput.startsWith("delete ")) {
-            return Command.delete;
+            return Command.DELETE;
         } else {
-            return Command.unknown;
+            return Command.UNKNOWN;
         }
     }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
-        int taskCount = 0;
+        ArrayList<Task> tasks = storage.loadTasks();
 
         String logo = "  ______ _    _ _____  ______ _   __      __       \n"
                     + " |  ____| |  | |  __ \\|  ____| | / /    / /\\ \\     \n"
@@ -127,110 +61,112 @@ public class Eureka {
             Command command = parseCommand(input);
 
             switch (command) {
-                case bye:
-                    printLine();
-                    System.out.println("  Bye. Hope to see you again soon!");
-                    printLine();
-                    scanner.close();
-                    return;
+            case BYE:
+                printLine();
+                System.out.println("  Bye. Hope to see you again soon!");
+                printLine();
+                scanner.close();
+                return;
 
-                case list:
+            case LIST:
+                printLine();
+                System.out.println("  Here are the tasks in your list:");
+                for (int i = 0; i < tasks.size(); i++) {
+                    System.out.println("  " + (i + 1) + ". " + tasks.get(i));
+                }
+                printLine();
+                break;
+
+            case MARK:
+                int markTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
+                if (markTaskNumber >= 0 && markTaskNumber < tasks.size()) {
+                    tasks.get(markTaskNumber).markAsDone();
+                    storage.saveTasks(tasks);
                     printLine();
-                    System.out.println("  Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println("  " + (i + 1) + ". " + tasks.get(i));
-                    }
+                    System.out.println("  Nice! I've marked this task as done:");
+                    System.out.println("    " + tasks.get(markTaskNumber));
+                    printLine();
+                }
+                break;
+
+            case UNMARK:
+                int unmarkTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
+                if (unmarkTaskNumber >= 0 && unmarkTaskNumber < tasks.size()) {
+                    tasks.get(unmarkTaskNumber).markAsNotDone();
+                    storage.saveTasks(tasks);
+                    printLine();
+                    System.out.println("  OK, I've marked this task as not done yet:");
+                    System.out.println("    " + tasks.get(unmarkTaskNumber));
+                    printLine();
+                }
+                break;
+
+            case TODO:
+                if (input.length()<5) {
+                    printLine();
+                    System.out.println("  A todo without a description doesn’t work. Try again with more details!");
                     printLine();
                     break;
+                }
+                String todoDescription = input.substring(5);
+                tasks.add(new ToDo(todoDescription));
+                storage.saveTasks(tasks);
+                printLine();
+                System.out.println("  Got it. I've added this task:");
+                System.out.println("    " + tasks.get(tasks.size() - 1));
+                System.out.println("  Now you have " + tasks.size() + " tasks in the list.");
+                printLine();
+                break;
 
-                case mark:
-                    int markTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
-                    if (markTaskNumber >= 0 && markTaskNumber < taskCount) {
-                        tasks.get(markTaskNumber).markAsDone();
-                        printLine();
-                        System.out.println("  Nice! I've marked this task as done:");
-                        System.out.println("    " + tasks.get(markTaskNumber));
-                        printLine();
-                    }
-                    break;
+            case DEADLINE:
+                String[] deadlineParts = input.substring(9).split(" /by ");
+                String deadlineDescription = deadlineParts[0];
+                String deadlineBy = deadlineParts[1];
+                tasks.add(new Deadline(deadlineDescription, deadlineBy));
+                storage.saveTasks(tasks);
+                printLine();
+                System.out.println("  Got it. I've added this task:");
+                System.out.println("    " + tasks.get(tasks.size() - 1));
+                System.out.println("  Now you have " + tasks.size() + " tasks in the list.");
+                printLine();
+                break;
 
-                case unmark:
-                    int unmarkTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
-                    if (unmarkTaskNumber >= 0 && unmarkTaskNumber < taskCount) {
-                        tasks.get(unmarkTaskNumber).markAsNotDone();
-                        printLine();
-                        System.out.println("  OK, I've marked this task as not done yet:");
-                        System.out.println("    " + tasks.get(unmarkTaskNumber));
-                        printLine();
-                    }
-                    break;
+            case EVENT:
+                String[] eventParts = input.substring(6).split(" /from | /to ");
+                String eventDescription = eventParts[0];
+                String eventFrom = eventParts[1];
+                String eventTo = eventParts[2];
+                tasks.add(new Event(eventDescription, eventFrom, eventTo));
+                storage.saveTasks(tasks);
+                printLine();
+                System.out.println("  Got it. I've added this task:");
+                System.out.println("    " + tasks.get(tasks.size() - 1));
+                System.out.println("  Now you have " + tasks.size() + " tasks in the list.");
+                printLine();
+                break;
 
-                case todo:
-                    if (input.length()<5) {
-                        printLine();
-                        System.out.println("  A todo without a description doesn’t work. Try again with more details!");
-                        printLine();
-                        break;
-                    }
-                    String todoDescription = input.substring(5);
-                    tasks.add(new ToDo(todoDescription));
-                    taskCount++;
+            case DELETE:
+                int deleteTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
+                if (deleteTaskNumber < 0 || deleteTaskNumber >= tasks.size()) {
                     printLine();
-                    System.out.println("  Got it. I've added this task:");
-                    System.out.println("    " + tasks.get(taskCount - 1));
-                    System.out.println("  Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("Oops! That task doesn’t exist. Try a valid task number.");
                     printLine();
-                    break;
+                } else {
+                    Task removedTask = tasks.remove(deleteTaskNumber);
+                    storage.saveTasks(tasks);
+                    printLine();
+                    System.out.println("  Noted. I've removed this task:");
+                    System.out.println("    " + removedTask);
+                    System.out.println("  Now you have " + tasks.size() + " tasks in the list.");
+                    printLine();
+                }
+                break;
 
-                case deadline:
-                    String[] deadlineParts = input.substring(9).split(" /by ");
-                    String deadlineDescription = deadlineParts[0];
-                    String deadlineBy = deadlineParts[1];
-                    tasks.add(new Deadline(deadlineDescription, deadlineBy));
-                    taskCount++;
-                    printLine();
-                    System.out.println("  Got it. I've added this task:");
-                    System.out.println("    " + tasks.get(taskCount - 1));
-                    System.out.println("  Now you have " + taskCount + " tasks in the list.");
-                    printLine();
-                    break;
-
-                case event:
-                    String[] eventParts = input.substring(6).split(" /from | /to ");
-                    String eventDescription = eventParts[0];
-                    String eventFrom = eventParts[1];
-                    String eventTo = eventParts[2];
-                    tasks.add(new Event(eventDescription, eventFrom, eventTo));
-                    taskCount++;
-                    printLine();
-                    System.out.println("  Got it. I've added this task:");
-                    System.out.println("    " + tasks.get(taskCount - 1));
-                    System.out.println("  Now you have " + taskCount + " tasks in the list.");
-                    printLine();
-                    break;
-
-                case delete:
-                    int deleteTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
-                    if (deleteTaskNumber < 0 || deleteTaskNumber >= tasks.size()) {
-                        printLine();
-                        System.out.println("Oops! That task doesn’t exist. Try a valid task number.");
-                        printLine();
-                    } else {
-                        Task removedTask = tasks.remove(deleteTaskNumber);
-                        printLine();
-                        System.out.println("  Noted. I've removed this task:");
-                        System.out.println("    " + removedTask);
-                        System.out.println("  Now you have " + tasks.size() + " tasks in the list.");
-                        printLine();
-                        taskCount--;
-                    }
-                    break;
-
-                default:
-                    printLine();
-                    System.out.println("  Sorry, I didn’t get that. Could you try something else?");
-                    printLine();
-                    break;
+            default:
+                printLine();
+                System.out.println("  Sorry, I didn’t get that. Could you try something else?");
+                printLine();
+                break;
             }
         }
     }
