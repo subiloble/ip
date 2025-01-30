@@ -1,3 +1,6 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public abstract class Task {
     String description;
     boolean isDone;
@@ -18,6 +21,10 @@ public abstract class Task {
     public String getStatus() {
         return (isDone ? "[X]" : "[ ]");
     }
+
+    public abstract boolean isOnDate(LocalDate date);
+
+    public abstract String toFileString();
 
     @Override
     public String toString() {
