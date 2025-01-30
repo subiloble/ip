@@ -1,8 +1,11 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 enum Command {
-    BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, UNKNOWN
+    BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, CHECK, UNKNOWN
 }
 
 public class Eureka {
@@ -36,6 +39,8 @@ public class Eureka {
             return Command.EVENT;
         } else if (userInput.startsWith("delete ")) {
             return Command.DELETE;
+        } else if (userInput.startsWith("check ")) {
+            return Command.CHECK;
         } else {
             return Command.UNKNOWN;
         }
@@ -44,6 +49,8 @@ public class Eureka {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Task> tasks = storage.loadTasks();
+        DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+        DateTimeFormatter DATE_ONLY_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         String logo = "  ______ _    _ _____  ______ _   __      __       \n"
                     + " |  ____| |  | |  __ \\|  ____| | / /    / /\\ \\     \n"
@@ -159,6 +166,29 @@ public class Eureka {
                     System.out.println("    " + removedTask);
                     System.out.println("  Now you have " + tasks.size() + " tasks in the list.");
                     printLine();
+                }
+                break;
+
+            case CHECK:
+                try {
+                    LocalDate date = LocalDate.parse(input.substring(6).trim(), DATE_ONLY_FORMAT);
+                    printLine();
+                    System.out.println("Tasks happening on " + date.format(DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
+
+                    boolean found = false;
+                    for (Task task : tasks) {
+                        if (task.isOnDate(date)) {
+                            System.out.println("  " + task);
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("  No tasks found on this date.");
+                    }
+                    printLine();
+                } catch (Exception e) {
+                    System.out.println("Invalid date format. Use: on yyyy-MM-dd");
                 }
                 break;
 
