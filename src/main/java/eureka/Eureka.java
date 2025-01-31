@@ -1,7 +1,20 @@
+package eureka;
+
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import command.Command;
+import command.CommandParser;
+import ui.Ui;
+import task.Task;
+import task.TaskList;
+import task.ToDo;
+import task.Deadline;
+import task.Event;
+import database.Storage;
+
 
 public class Eureka {
     private static final String FILE_PATH = "./data/eureka.txt";

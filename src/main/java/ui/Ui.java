@@ -1,6 +1,10 @@
+package ui;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
+import task.Task;
+import task.TaskList;
 
 public class Ui {
     String logo;
@@ -41,7 +45,7 @@ public class Ui {
         printLine();
     }
 
-    public void listMessage(ArrayList<Task> tasks){
+    public void listMessage(TaskList tasks){
         printLine();
         System.out.println("  Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
@@ -78,7 +82,7 @@ public class Ui {
         printLine();
     }
 
-    public void deadMessage(ArrayList<Task> tasks){
+    public void deadMessage(TaskList tasks){
         printLine();
         System.out.println("  Got it. I've added this task:");
         System.out.println("    " + tasks.get(tasks.size() - 1));
@@ -86,7 +90,7 @@ public class Ui {
         printLine();
     }
 
-    public void eventMessage(ArrayList<Task> tasks){
+    public void eventMessage(TaskList tasks){
         printLine();
         System.out.println("  Got it. I've added this task:");
         System.out.println("    " + tasks.get(tasks.size() - 1));

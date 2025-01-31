@@ -1,3 +1,5 @@
+package command;
+
 public class CommandParser {
     public Command readCommand(String userInput) {
         if (userInput.equals("bye")) {
