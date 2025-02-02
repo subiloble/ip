@@ -60,6 +60,17 @@ public class Ui {
         printLine();
     }
 
+    public void find(TaskList tasks, String des) {
+        printLine();
+        System.out.println("  Here are the matching tasks in your list:");
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).description.contains(des)) {
+                System.out.println("  " + (i + 1) + ". " + tasks.get(i));
+            }
+        }
+        printLine();
+    }
+
     public void markMessage(Task task){
         printLine();
         System.out.println("  Nice! I've marked this task as done:");
