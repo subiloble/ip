@@ -51,6 +51,15 @@ public class Eureka {
                 ui.listMessage(tasks);
                 break;
 
+            case FIND:
+                if (input.length()<5) {
+                    ui.findWarning();
+                    break;
+                }
+                String findDescription = input.substring(5);
+                ui.find(tasks, findDescription);
+                break;
+
             case MARK:
                 int markTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
                 if (markTaskNumber >= 0 && markTaskNumber < tasks.size()) {

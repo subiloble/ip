@@ -78,6 +78,18 @@ public class Ui {
         printLine();
     }
 
+    /** Prints the warning message for finding a task. */
+    public void findWarning(){
+        printLine();
+        System.out.println("  Finding cannot work without a part of description.");
+        printLine();
+    }
+
+    /** Prints all tasks in the given task list that contains certain keywords.
+     *
+     * @param tasks Task list.
+     * @param des Description keywords.
+     */
     public void find(TaskList tasks, String des) {
         printLine();
         System.out.println("  Here are the matching tasks in your list:");

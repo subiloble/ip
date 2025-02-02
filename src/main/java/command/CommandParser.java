@@ -14,6 +14,8 @@ public class CommandParser {
             return Command.BYE;
         } else if (userInput.equals("list")) {
             return Command.LIST;
+        } else if (userInput.startsWith("find ")) {
+            return Command.FIND;
         } else if (userInput.startsWith("mark ")) {
             return Command.MARK;
         } else if (userInput.startsWith("unmark ")) {
