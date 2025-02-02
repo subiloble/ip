@@ -1,19 +1,18 @@
 package eureka;
 
-import java.util.Scanner;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
 import command.Command;
 import command.CommandParser;
-import ui.Ui;
+import database.Storage;
+import task.Deadline;
+import task.Event;
 import task.Task;
 import task.TaskList;
 import task.ToDo;
-import task.Deadline;
-import task.Event;
-import database.Storage;
+import ui.Ui;
 
 /**
  * The Eureka application is a chatbot and task management system
@@ -21,16 +20,17 @@ import database.Storage;
  * It supports ToDo, Deadline, and Event task types.
  */
 
+@SuppressWarnings("CheckStyle")
 public class Eureka {
     private static final String FILE_PATH = "./data/eureka.txt";
     private static final Storage storage = new Storage(FILE_PATH);
 
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Ui ui = new Ui();
         CommandParser parser = new CommandParser();
         TaskList tasks = new TaskList(storage.loadTasks());
-        DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
         DateTimeFormatter DATE_ONLY_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         ui.printLogo();
@@ -52,7 +52,7 @@ public class Eureka {
                 break;
 
             case FIND:
-                if (input.length()<5) {
+                if (input.length() < 5) {
                     ui.findWarning();
                     break;
                 }
@@ -79,7 +79,7 @@ public class Eureka {
                 break;
 
             case TODO:
-                if (input.length()<5) {
+                if (input.length() < 5) {
                     ui.todoWarning();
                     break;
                 }
@@ -92,11 +92,13 @@ public class Eureka {
             case DEADLINE:
                 try {
                     if (!input.contains("/by")) {
-                        throw new IllegalArgumentException("Invalid format. Use: deadline [description] /by [yyyy-MM-dd HHmm]");
+                        throw new IllegalArgumentException("Invalid format. Use: "
+                                + "deadline [description] /by [yyyy-MM-dd HHmm]");
                     }
                     String[] deadlineParts = input.substring(9).split(" /by ", 2);
                     if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
-                        throw new IllegalArgumentException("Both description and date are required. Example: deadline Submit report /by 2024-02-01 1800");
+                        throw new IllegalArgumentException("Both description and "
+                                + "date are required. Example: deadline Submit report /by 2024-02-01 1800");
                     }
                     String deadlineDescription = deadlineParts[0].trim();
                     String deadlineBy = deadlineParts[1].trim();
@@ -111,11 +113,14 @@ public class Eureka {
             case EVENT:
                 try {
                     if (!input.contains("/from") || !input.contains("/to")) {
-                        throw new IllegalArgumentException("Invalid format. Use: event [description] /from [start] /to [end]");
+                        throw new IllegalArgumentException("Invalid format. Use: "
+                                + "event [description] /from [start] /to [end]");
                     }
                     String[] eventParts = input.substring(6).split(" /from | /to ", 3);
-                    if (eventParts.length < 3 || eventParts[0].isBlank() || eventParts[1].isBlank() || eventParts[2].isBlank()) {
-                        throw new IllegalArgumentException("Description, start, and end times are required. Example: event Workshop /from 2024-02-01 0900 /to 2024-02-01 1200");
+                    if (eventParts.length < 3 || eventParts[0].isBlank()
+                            || eventParts[1].isBlank() || eventParts[2].isBlank()) {
+                        throw new IllegalArgumentException("Description, start, and end times are required. "
+                                + "Example: event Workshop /from 2024-02-01 0900 /to 2024-02-01 1200");
                     }
                     String eventDescription = eventParts[0].trim();
                     String eventFrom = eventParts[1].trim();
@@ -152,7 +157,8 @@ public class Eureka {
                 try {
                     LocalDate date = LocalDate.parse(input.substring(6).trim(), DATE_ONLY_FORMAT);
                     ui.printLine();
-                    System.out.println("Tasks happening on " + date.format(DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
+                    System.out.println("Tasks happening on "
+                            + date.format(DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
 
                     boolean found = false;
                     for (Task task : tasks) {
