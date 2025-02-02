@@ -13,13 +13,23 @@ import task.Event;
 import task.Deadline;
 import task.ToDo;
 
+/** Database storing all tasks in the Eureka task book */
+
 public class Storage {
     private final String filePath;
 
+    /** Initialises the task book.
+     *
+     * @param filePath Path of the task book.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /** Saves the task book as a new task book.
+     *
+     * @param tasks Task list containing all tasks to be saved.
+     */
     public void saveTasks(ArrayList<Task> tasks) {
         try {
             File file = new File(filePath);
@@ -36,6 +46,10 @@ public class Storage {
         }
     }
 
+    /** Loads the task book.
+     *
+     * @return Task book.
+     */
     public ArrayList<Task> loadTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
         File file = new File(filePath);

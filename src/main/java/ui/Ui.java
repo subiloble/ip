@@ -1,14 +1,19 @@
 package ui;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Scanner;
+
 import task.Task;
 import task.TaskList;
 
+/**
+ * Chatbot responses and user interface.
+ */
+
 public class Ui {
+    /** Logo */
     String logo;
 
+    /** Initialise Ui wth Eureka logo. */
     public Ui() {
         this.logo = "  ______ _    _ _____  ______ _   __      __       \n"
                 + " |  ____| |  | |  __ \\|  ____| | / /    / /\\ \\     \n"
@@ -19,6 +24,7 @@ public class Ui {
         ;
     }
 
+    /** Prints underlines for separation. */
     public void printLine(){
         System.out.print("  ");
         for(int i = 0; i < 50; i++)
@@ -29,28 +35,39 @@ public class Ui {
         System.out.println();
     }
 
+    /** Prints logo. */
     public void printLogo(){
         System.out.println(logo);
     }
 
+    /** Shows error messages.
+     *
+     * @param message Message to be printed.
+     */
     public void showError(String message){
         printLine();
         System.out.println("  " + message);
         printLine();
     }
 
+    /** Prints welcome message. */
     public void welcome(){
         System.out.println("  Hello! I'm Eureka.");
         System.out.println("  What can I do for you?");
         printLine();
     }
 
+    /** Prints bye message. */
     public void byeMessage(){
         printLine();
         System.out.println("  Bye. Hope to see you again soon!");
         printLine();
     }
 
+    /** Prints all tasks in the given task list.
+     *
+     * @param tasks Task list.
+     */
     public void listMessage(TaskList tasks){
         printLine();
         System.out.println("  Here are the tasks in your list:");
@@ -60,6 +77,10 @@ public class Ui {
         printLine();
     }
 
+    /** Prints the message for change of status from unmarked to marked for the given task.
+     *
+     * @param task Task marked as done.
+     */
     public void markMessage(Task task){
         printLine();
         System.out.println("  Nice! I've marked this task as done:");
@@ -67,6 +88,10 @@ public class Ui {
         printLine();
     }
 
+    /** Prints the message for change of status from marked to unmarked for the given task.
+     *
+     * @param task Task marked as not done.
+     */
     public void unmarkMessage(Task task){
         printLine();
         System.out.println("  OK, I've marked this task as not done yet:");
@@ -74,12 +99,17 @@ public class Ui {
         printLine();
     }
 
+    /** Prints the warning message for todo initialisation. */
     public void todoWarning(){
         printLine();
         System.out.println("  A todo without a description doesn’t work. Try again with more details!");
         printLine();
     }
 
+    /** Prints the completion message for todo initialisation.
+     *
+     * @param tasks Task list where a todo task is added.
+     */
     public void todoMessage(ArrayList<Task> tasks){
         printLine();
         System.out.println("  Got it. I've added this task:");
@@ -88,7 +118,11 @@ public class Ui {
         printLine();
     }
 
-    public void deadMessage(TaskList tasks){
+    /** Prints the completion message for deadline initialisation.
+     *
+     * @param tasks Task list where a deadline task is added.
+     */
+    public void deadlineMessage(TaskList tasks){
         printLine();
         System.out.println("  Got it. I've added this task:");
         System.out.println("    " + tasks.get(tasks.size() - 1));
@@ -96,6 +130,10 @@ public class Ui {
         printLine();
     }
 
+    /** Prints the completion message for event initialisation.
+     *
+     * @param tasks Task list where an event task is added.
+     */
     public void eventMessage(TaskList tasks){
         printLine();
         System.out.println("  Got it. I've added this task:");
@@ -104,12 +142,11 @@ public class Ui {
         printLine();
     }
 
-    public void deleteNotFound(){
-        printLine();
-        System.out.println("Oops! That task doesn’t exist. Try a valid task number.");
-        printLine();
-    }
-
+    /** Prints the completion message for deletion of a task.
+     *
+     * @param removedTask Task being deleted.
+     * @param size Size of the task list where a task is deleted.
+     */
     public void deleteMessage(Task removedTask, int size){
         printLine();
         System.out.println("  Noted. I've removed this task:");
@@ -118,6 +155,7 @@ public class Ui {
         printLine();
     }
 
+    /** Prints the message when Eureka chatbot cannot understand the command. */
     public void notUnderstand(){
         printLine();
         System.out.println("  Sorry, I didn’t get that. Could you try something else?");
