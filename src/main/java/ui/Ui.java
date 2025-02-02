@@ -1,7 +1,8 @@
 package ui;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-
+import java.util.Scanner;
 import task.Task;
 import task.TaskList;
 
@@ -77,10 +78,22 @@ public class Ui {
         printLine();
     }
 
+    public void find(TaskList tasks, String des) {
+        printLine();
+        System.out.println("  Here are the matching tasks in your list:");
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).description.contains(des)) {
+                System.out.println("  " + (i + 1) + ". " + tasks.get(i));
+            }
+        }
+        printLine();
+    }
+
     /** Prints the message for change of status from unmarked to marked for the given task.
      *
      * @param task Task marked as done.
      */
+
     public void markMessage(Task task){
         printLine();
         System.out.println("  Nice! I've marked this task as done:");
@@ -155,7 +168,6 @@ public class Ui {
         printLine();
     }
 
-    /** Prints the message when Eureka chatbot cannot understand the command. */
     public void notUnderstand(){
         printLine();
         System.out.println("  Sorry, I didn’t get that. Could you try something else?");
