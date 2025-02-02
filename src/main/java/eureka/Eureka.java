@@ -75,32 +75,61 @@ public class Eureka {
                 break;
 
             case DEADLINE:
-                String[] deadlineParts = input.substring(9).split(" /by ");
-                String deadlineDescription = deadlineParts[0];
-                String deadlineBy = deadlineParts[1];
-                tasks.add(new Deadline(deadlineDescription, deadlineBy));
-                storage.saveTasks(tasks);
-                ui.deadMessage(tasks);
+                try {
+                    if (!input.contains("/by")) {
+                        throw new IllegalArgumentException("Invalid format. Use: deadline [description] /by [yyyy-MM-dd HHmm]");
+                    }
+                    String[] deadlineParts = input.substring(9).split(" /by ", 2);
+                    if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
+                        throw new IllegalArgumentException("Both description and date are required. Example: deadline Submit report /by 2024-02-01 1800");
+                    }
+                    String deadlineDescription = deadlineParts[0].trim();
+                    String deadlineBy = deadlineParts[1].trim();
+                    tasks.add(new Deadline(deadlineDescription, deadlineBy));
+                    storage.saveTasks(tasks);
+                    ui.deadMessage(tasks);
+                } catch (IllegalArgumentException e) {
+                    ui.showError(e.getMessage());
+                }
                 break;
 
             case EVENT:
-                String[] eventParts = input.substring(6).split(" /from | /to ");
-                String eventDescription = eventParts[0];
-                String eventFrom = eventParts[1];
-                String eventTo = eventParts[2];
-                tasks.add(new Event(eventDescription, eventFrom, eventTo));
-                storage.saveTasks(tasks);
-                ui.eventMessage(tasks);
+                try {
+                    if (!input.contains("/from") || !input.contains("/to")) {
+                        throw new IllegalArgumentException("Invalid format. Use: event [description] /from [start] /to [end]");
+                    }
+                    String[] eventParts = input.substring(6).split(" /from | /to ", 3);
+                    if (eventParts.length < 3 || eventParts[0].isBlank() || eventParts[1].isBlank() || eventParts[2].isBlank()) {
+                        throw new IllegalArgumentException("Description, start, and end times are required. Example: event Workshop /from 2024-02-01 0900 /to 2024-02-01 1200");
+                    }
+                    String eventDescription = eventParts[0].trim();
+                    String eventFrom = eventParts[1].trim();
+                    String eventTo = eventParts[2].trim();
+                    tasks.add(new Event(eventDescription, eventFrom, eventTo));
+                    storage.saveTasks(tasks);
+                    ui.eventMessage(tasks);
+                } catch (IllegalArgumentException e) {
+                    ui.showError(e.getMessage());
+                }
                 break;
 
             case DELETE:
-                int deleteTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
-                if (deleteTaskNumber < 0 || deleteTaskNumber >= tasks.size()) {
-                    ui.deleteNotFound();
-                } else {
+                try {
+                    String[] deleteParts = input.split(" ");
+                    if (deleteParts.length != 2) {
+                        throw new IllegalArgumentException("Invalid format. Use: delete [task number]");
+                    }
+                    int deleteTaskNumber = Integer.parseInt(deleteParts[1]) - 1;
+                    if (deleteTaskNumber < 0 || deleteTaskNumber >= tasks.size()) {
+                        throw new IndexOutOfBoundsException("Task number does not exist.");
+                    }
                     Task removedTask = tasks.remove(deleteTaskNumber);
                     storage.saveTasks(tasks);
                     ui.deleteMessage(removedTask, tasks.size());
+                } catch (NumberFormatException e) {
+                    ui.showError("Invalid task number. Please enter a valid number.");
+                } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+                    ui.showError(e.getMessage());
                 }
                 break;
 

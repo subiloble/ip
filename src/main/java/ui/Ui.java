@@ -33,6 +33,12 @@ public class Ui {
         System.out.println(logo);
     }
 
+    public void showError(String message){
+        printLine();
+        System.out.println("  " + message);
+        printLine();
+    }
+
     public void welcome(){
         System.out.println("  Hello! I'm Eureka.");
         System.out.println("  What can I do for you?");

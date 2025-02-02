@@ -3,6 +3,7 @@ package task;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Event extends Task {
     private final LocalDateTime from;
@@ -12,8 +13,18 @@ public class Event extends Task {
 
     public Event(String description, String from, String to) {
         super(description);
-        this.from = LocalDateTime.parse(from, INPUT_FORMATTER);
-        this.to = LocalDateTime.parse(to, INPUT_FORMATTER);
+        this.from = parseDate(from);
+        this.to = parseDate(to);
+    }
+
+    private LocalDateTime parseDate(String dateStr) {
+        try {
+            return LocalDateTime.parse(dateStr, INPUT_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException(
+                    "Invalid date format. Please use 'yyyy-MM-dd HHmm' (e.g., 2025-02-15 2359)."
+            );
+        }
     }
 
     public boolean isOnDate(LocalDate date) {
