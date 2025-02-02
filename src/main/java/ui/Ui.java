@@ -12,7 +12,7 @@ import task.TaskList;
 
 public class Ui {
     /** Logo */
-    String logo;
+    private final String logo;
 
     /** Initialise Ui wth Eureka logo. */
     public Ui() {
@@ -26,10 +26,9 @@ public class Ui {
     }
 
     /** Prints underlines for separation. */
-    public void printLine(){
+    public void printLine() {
         System.out.print("  ");
-        for(int i = 0; i < 50; i++)
-        {
+        for (int i = 0; i < 50; i++) {
             System.out.print("_");
         }
         System.out.println();
@@ -37,39 +36,41 @@ public class Ui {
     }
 
     /** Prints logo. */
-    public void printLogo(){
+    public void printLogo() {
         System.out.println(logo);
     }
 
-    /** Shows error messages.
+    /**
+     * Shows error messages.
      *
      * @param message Message to be printed.
      */
-    public void showError(String message){
+    public void showError(String message) {
         printLine();
         System.out.println("  " + message);
         printLine();
     }
 
     /** Prints welcome message. */
-    public void welcome(){
+    public void welcome() {
         System.out.println("  Hello! I'm Eureka.");
         System.out.println("  What can I do for you?");
         printLine();
     }
 
     /** Prints bye message. */
-    public void byeMessage(){
+    public void byeMessage() {
         printLine();
         System.out.println("  Bye. Hope to see you again soon!");
         printLine();
     }
 
-    /** Prints all tasks in the given task list.
+    /**
+     * Prints all tasks in the given task list.
      *
      * @param tasks Task list.
      */
-    public void listMessage(TaskList tasks){
+    public void listMessage(TaskList tasks) {
         printLine();
         System.out.println("  Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
@@ -79,13 +80,14 @@ public class Ui {
     }
 
     /** Prints the warning message for finding a task. */
-    public void findWarning(){
+    public void findWarning() {
         printLine();
         System.out.println("  Finding cannot work without a part of description.");
         printLine();
     }
 
-    /** Prints all tasks in the given task list that contains certain keywords.
+    /**
+     * Prints all tasks in the given task list that contains certain keywords.
      *
      * @param tasks Task list.
      * @param des Description keywords.
@@ -101,12 +103,13 @@ public class Ui {
         printLine();
     }
 
-    /** Prints the message for change of status from unmarked to marked for the given task.
+    /**
+     * Prints the message for change of status from unmarked to marked for the given task.
      *
      * @param task Task marked as done.
      */
 
-    public void markMessage(Task task){
+    public void markMessage(Task task) {
         printLine();
         System.out.println("  Nice! I've marked this task as done:");
         System.out.println("    " + task);
@@ -117,7 +120,7 @@ public class Ui {
      *
      * @param task Task marked as not done.
      */
-    public void unmarkMessage(Task task){
+    public void unmarkMessage(Task task) {
         printLine();
         System.out.println("  OK, I've marked this task as not done yet:");
         System.out.println("    " + task);
@@ -125,17 +128,18 @@ public class Ui {
     }
 
     /** Prints the warning message for todo initialisation. */
-    public void todoWarning(){
+    public void todoWarning() {
         printLine();
         System.out.println("  A todo without a description doesn’t work. Try again with more details!");
         printLine();
     }
 
-    /** Prints the completion message for todo initialisation.
+    /**
+     * Prints the completion message for todo initialisation.
      *
      * @param tasks Task list where a todo task is added.
      */
-    public void todoMessage(ArrayList<Task> tasks){
+    public void todoMessage(ArrayList<Task> tasks) {
         printLine();
         System.out.println("  Got it. I've added this task:");
         System.out.println("    " + tasks.get(tasks.size() - 1));
@@ -143,11 +147,12 @@ public class Ui {
         printLine();
     }
 
-    /** Prints the completion message for deadline initialisation.
+    /**
+     * Prints the completion message for deadline initialisation.
      *
      * @param tasks Task list where a deadline task is added.
      */
-    public void deadlineMessage(TaskList tasks){
+    public void deadlineMessage(TaskList tasks) {
         printLine();
         System.out.println("  Got it. I've added this task:");
         System.out.println("    " + tasks.get(tasks.size() - 1));
@@ -155,11 +160,12 @@ public class Ui {
         printLine();
     }
 
-    /** Prints the completion message for event initialisation.
+    /**
+     * Prints the completion message for event initialisation.
      *
      * @param tasks Task list where an event task is added.
      */
-    public void eventMessage(TaskList tasks){
+    public void eventMessage(TaskList tasks) {
         printLine();
         System.out.println("  Got it. I've added this task:");
         System.out.println("    " + tasks.get(tasks.size() - 1));
@@ -167,12 +173,13 @@ public class Ui {
         printLine();
     }
 
-    /** Prints the completion message for deletion of a task.
+    /**
+     * Prints the completion message for deletion of a task.
      *
      * @param removedTask Task being deleted.
      * @param size Size of the task list where a task is deleted.
      */
-    public void deleteMessage(Task removedTask, int size){
+    public void deleteMessage(Task removedTask, int size) {
         printLine();
         System.out.println("  Noted. I've removed this task:");
         System.out.println("    " + removedTask);
@@ -180,7 +187,7 @@ public class Ui {
         printLine();
     }
 
-    public void notUnderstand(){
+    public void notUnderstand() {
         printLine();
         System.out.println("  Sorry, I didn’t get that. Could you try something else?");
         printLine();
