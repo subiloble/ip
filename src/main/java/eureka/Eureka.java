@@ -15,6 +15,11 @@ import task.Deadline;
 import task.Event;
 import database.Storage;
 
+/**
+ * The Eureka application is a chatbot and task management system
+ * that allows users to create, modify, and manage tasks.
+ * It supports ToDo, Deadline, and Event task types.
+ */
 
 public class Eureka {
     private static final String FILE_PATH = "./data/eureka.txt";
@@ -32,6 +37,7 @@ public class Eureka {
         ui.welcome();
 
         while (true) {
+            // Capture user input commands
             String input = scanner.nextLine();
             Command command = parser.readCommand(input);
 
@@ -87,7 +93,7 @@ public class Eureka {
                     String deadlineBy = deadlineParts[1].trim();
                     tasks.add(new Deadline(deadlineDescription, deadlineBy));
                     storage.saveTasks(tasks);
-                    ui.deadMessage(tasks);
+                    ui.deadlineMessage(tasks);
                 } catch (IllegalArgumentException e) {
                     ui.showError(e.getMessage());
                 }

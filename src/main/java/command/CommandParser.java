@@ -1,6 +1,14 @@
 package command;
 
+/** Parser that analyses the commands input by the user. */
+
 public class CommandParser {
+
+    /** Reads and analyses the user input to give a corresponding command.
+     *
+     * @param userInput Input line by the user.
+     * @return Command.
+     */
     public Command readCommand(String userInput) {
         if (userInput.equals("bye")) {
             return Command.BYE;
