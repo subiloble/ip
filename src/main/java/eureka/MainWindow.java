@@ -40,6 +40,14 @@ public class MainWindow extends AnchorPane {
         eureka = d;
     }
 
+    /** Greets with the welcome message */
+    public void welcome() {
+        String response = eureka.getResponse("logo");
+        dialogContainer.getChildren().addAll(
+                DialogBox.getEurekaDialog(response, eurekaImage)
+        );
+    }
+
     /**
      * Creates two dialog boxes, one echoing user input and the other containing Eureka's reply and then appends them to
      * the dialog container. Clears the user input after processing.

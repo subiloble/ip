@@ -201,6 +201,10 @@ public class Eureka {
         if (input.equals("test")) {
             return "Nice! GUI is Working.";
         }
+        if (input.equals("logo")) {
+            return ui.welcome();
+        }
+
         switch (command) {
             case BYE:
                 return ui.byeMessage();
