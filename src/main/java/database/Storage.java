@@ -51,7 +51,7 @@ public class Storage {
      *
      * @param type Type of the task.
      * @param description Description of the task.
-     * @param parts Array of other potential parameters of the task.
+     * @param parts Array of other potential p arameters of the task.
      * @return Task created using the given parameters.
      */
 
