@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 public class Event extends Task {
     private final LocalDateTime from;
@@ -13,31 +14,40 @@ public class Event extends Task {
 
     public Event(String description, String from, String to) {
         super(description);
-        this.from = parseDate(from);
-        this.to = parseDate(to);
+        this.from = parseDate(from)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid 'from' date format."));
+        this.to = parseDate(to)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid 'to' date format."));
     }
 
-    private LocalDateTime parseDate(String dateStr) {
+    private Optional<LocalDateTime> parseDate(String dateStr) {
         try {
-            return LocalDateTime.parse(dateStr, INPUT_FORMATTER);
+            return Optional.of(LocalDateTime.parse(dateStr, INPUT_FORMATTER));
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException(
-                    "Invalid date format. Please use 'yyyy-MM-dd HHmm' (e.g., 2025-02-15 2359)."
-            );
+            return Optional.empty();
         }
     }
 
     public boolean isOnDate(LocalDate date) {
-        return (date.isEqual(from.toLocalDate()) || date.isAfter(from.toLocalDate())) && (date.isEqual(to.toLocalDate()) || date.isBefore(to.toLocalDate()));
+        return !date.isBefore(from.toLocalDate()) && !date.isAfter(to.toLocalDate());
     }
 
     @Override
     public String toFileString() {
-        return "E | " + (isDone ? "1" : "0") + " | " + description + " | " + from.format(INPUT_FORMATTER) + " | " + to.format(INPUT_FORMATTER);
+        return String.format("E | %d | %s | %s | %s",
+                isDone ? 1 : 0,
+                description,
+                from.format(INPUT_FORMATTER),
+                to.format(INPUT_FORMATTER)
+        );
     }
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + from.format(OUTPUT_FORMATTER) + " to: " + to.format(OUTPUT_FORMATTER) + ")";
+        return String.format("[E]%s (from: %s to: %s)",
+                super.toString(),
+                from.format(OUTPUT_FORMATTER),
+                to.format(OUTPUT_FORMATTER)
+        );
     }
 }
