@@ -18,7 +18,8 @@ import task.ToDo;
 public class Storage {
     private final String filePath;
 
-    /** Initialises the task book.
+    /**
+     * Initialises the task book.
      *
      * @param filePath Path of the task book.
      */
@@ -35,7 +36,6 @@ public class Storage {
             File file = new File(filePath);
             file.getParentFile().mkdirs();
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-
             for (Task task : tasks) {
                 writer.write(task.toFileString());
                 writer.newLine();
@@ -44,6 +44,27 @@ public class Storage {
         } catch (IOException e) {
             System.out.println("Error saving tasks: " + e.getMessage());
         }
+    }
+
+    /**
+     *  Creates a task given its information.
+     *
+     * @param type Type of the task.
+     * @param description Description of the task.
+     * @param parts Array of other potential parameters of the task.
+     * @return Task created using the given parameters.
+     */
+
+    private Task createTask(String type, String description, String[] parts) {
+        return switch (type) {
+            case "T" -> new ToDo(description);
+            case "D" -> parts.length > 3 ? new Deadline(description, parts[3]) : null;
+            case "E" -> parts.length > 4 ? new Event(description, parts[3], parts[4]) : null;
+            default -> {
+                System.err.println("Unidentified task type: " + type);
+                yield null;
+            }
+        };
     }
 
     /** Loads the task book.
@@ -55,7 +76,6 @@ public class Storage {
         File file = new File(filePath);
 
         if (!file.exists()) {
-            System.out.println("  New task list created");
             return tasks;
         }
 
@@ -63,25 +83,17 @@ public class Storage {
             while (scanner.hasNextLine()) {
                 String[] parts = scanner.nextLine().split(" \\| ");
                 String type = parts[0];
-                boolean isDone = parts[1].equals("1");
+                boolean isDone = "1".equals(parts[1]);
                 String description = parts[2];
 
-                Task task;
-                if (type.equals("T")) {
-                    task = new ToDo(description);
-                } else if (type.equals("D")) {
-                    task = new Deadline(description, parts[3]);
-                } else if (type.equals("E")) {
-                    task = new Event(description, parts[3], parts[4]);
-                } else {
-                    System.out.println("  Unidentified task type: " + type);
-                    continue;
-                }
+                Task task = createTask(type, description, parts);
 
-                if (isDone) {
-                    task.markAsDone();
+                if (task != null) {
+                    if (isDone) {
+                        task.markAsDone();
+                    }
+                    tasks.add(task);
                 }
-                tasks.add(task);
             }
         } catch (IOException e) {
             System.out.println("Error loading tasks: " + e.getMessage());
