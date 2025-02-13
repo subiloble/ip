@@ -30,6 +30,8 @@ public class CommandParser {
             return Command.DELETE;
         } else if (userInput.startsWith("check ")) {
             return Command.CHECK;
+        } else if (userInput.startsWith("undo")) {
+            return Command.UNDO;
         } else {
             return Command.UNKNOWN;
         }

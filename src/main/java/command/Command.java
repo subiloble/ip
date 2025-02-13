@@ -3,5 +3,5 @@ package command;
 /** All commands */
 
 public enum Command {
-    BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, CHECK, FIND, UNKNOWN
+    BYE, LIST, MARK, UNMARK, TODO, DEADLINE, EVENT, DELETE, CHECK, FIND, UNDO, UNKNOWN
 }

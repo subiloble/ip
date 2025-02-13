@@ -2,15 +2,12 @@ package eureka;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import command.Command;
 import command.CommandParser;
 import database.Storage;
-import task.Deadline;
-import task.Event;
-import task.Task;
-import task.TaskList;
-import task.ToDo;
+import task.*;
 import ui.UiMessage;
 
 /**
@@ -23,12 +20,14 @@ import ui.UiMessage;
 public class Eureka {
     private static final String FILE_PATH = "./data/eureka.txt";
     private static final Storage storage = new Storage(FILE_PATH);
+    private static final UiMessage ui = new UiMessage();
+    private static final CommandParser parser = new CommandParser();
+    private static final DateTimeFormatter DATE_ONLY_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public TaskList tasks = new TaskList(storage.loadTasks());
+    public TaskHistory taskHist = new TaskHistory(tasks);
 
     public String getResponse(String input) {
-        UiMessage ui = new UiMessage();
-        CommandParser parser = new CommandParser();
-        TaskList tasks = new TaskList(storage.loadTasks());
-        DateTimeFormatter DATE_ONLY_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Command command = parser.readCommand(input);
 
         if (input.equals("test")) {
@@ -58,6 +57,7 @@ public class Eureka {
                     assert markTaskNumber >= 0 && markTaskNumber <= tasks.size(): "Task number out of bounds";
                     tasks.get(markTaskNumber).markAsDone();
                     storage.saveTasks(tasks);
+                    taskHist.saveHistory(tasks);
                     return ui.markMessage(tasks.get(markTaskNumber));
                 } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
                     return ui.showError(e.getMessage());
@@ -69,6 +69,7 @@ public class Eureka {
                     assert unmarkTaskNumber >= 0 && unmarkTaskNumber <= tasks.size(): "Task number out of bounds";
                     tasks.get(unmarkTaskNumber).markAsNotDone();
                     storage.saveTasks(tasks);
+                    taskHist.saveHistory(tasks);
                     return ui.unmarkMessage(tasks.get(unmarkTaskNumber));
                 } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
                     return ui.showError(e.getMessage());
@@ -81,6 +82,7 @@ public class Eureka {
                 String todoDescription = input.substring(5);
                 tasks.add(new ToDo(todoDescription));
                 storage.saveTasks(tasks);
+                taskHist.saveHistory(tasks);
                 return ui.todoMessage(tasks);
 
             case DEADLINE:
@@ -98,6 +100,7 @@ public class Eureka {
                     String deadlineBy = deadlineParts[1].trim();
                     tasks.add(new Deadline(deadlineDescription, deadlineBy));
                     storage.saveTasks(tasks);
+                    taskHist.saveHistory(tasks);
                     return ui.deadlineMessage(tasks);
                 } catch (IllegalArgumentException e) {
                     return ui.showError(e.getMessage());
@@ -120,6 +123,7 @@ public class Eureka {
                     String eventTo = eventParts[2].trim();
                     tasks.add(new Event(eventDescription, eventFrom, eventTo));
                     storage.saveTasks(tasks);
+                    taskHist.saveHistory(tasks);
                     return ui.eventMessage(tasks);
                 } catch (IllegalArgumentException e) {
                     return ui.showError(e.getMessage());
@@ -137,6 +141,7 @@ public class Eureka {
                     }
                     Task removedTask = tasks.remove(deleteTaskNumber);
                     storage.saveTasks(tasks);
+                    taskHist.saveHistory(tasks);
                     return ui.deleteMessage(removedTask, tasks.size());
                 } catch (NumberFormatException e) {
                     return ui.showError("Invalid task number. Please enter a valid number.");
@@ -166,6 +171,14 @@ public class Eureka {
                     }
                 } catch (Exception e) {
                     return "Invalid date format. Use: on yyyy-MM-dd";
+                }
+
+            case UNDO:
+                if (taskHist.canDeleteHistory()) {
+                    tasks = taskHist.deleteHistory();
+                    return ui.listMessage(tasks);
+                } else {
+                    return "No history found.";
                 }
 
             default:
