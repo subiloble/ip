@@ -2,6 +2,7 @@ package eureka;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 import command.Command;
@@ -27,6 +28,167 @@ public class Eureka {
     public TaskList tasks = new TaskList(storage.loadTasks());
     public TaskHistory taskHist = new TaskHistory((TaskList) tasks.clone());
 
+    private int parseTaskNumber(String input) {
+        String[] parts = input.split(" ");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid format. Use: [command] [task number]");
+        }
+        int taskNumber = Integer.parseInt(parts[1]) - 1;
+        if (taskNumber < 0 || taskNumber >= tasks.size()) {
+            throw new IndexOutOfBoundsException("Task number does not exist.");
+        }
+        return taskNumber;
+    }
+
+    private String[] parseDeadlineInput(String input) {
+        if (!input.contains("/by")) {
+            throw new IllegalArgumentException("Invalid format. Use: deadline [description] /by [yyyy-MM-dd HHmm]");
+        }
+        String[] parts = input.substring(9).split(" /by ", 2);
+        if (parts.length < 2 || parts[0].isBlank() || parts[1].isBlank()) {
+            throw new IllegalArgumentException("Both description and date are required.");
+        }
+        return new String[]{parts[0].trim(), parts[1].trim()};
+    }
+
+    private String[] parseEventInput(String input) {
+        if (!input.contains("/from") || !input.contains("/to")) {
+            throw new IllegalArgumentException("Invalid format. Use: event [description] /from [start] /to [end]");
+        }
+        String[] parts = input.substring(6).split(" /from | /to ", 3);
+        if (parts.length < 3 || parts[0].isBlank() || parts[1].isBlank() || parts[2].isBlank()) {
+            throw new IllegalArgumentException("Description, start, and end times are required.");
+        }
+        return new String[]{parts[0].trim(), parts[1].trim(), parts[2].trim()};
+    }
+
+    private void updateStorage() {
+        storage.saveTasks(tasks);
+        taskHist.saveHistory(tasks);
+    }
+
+    private String getTasksForDate(LocalDate date) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Tasks happening on ").append(date.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))).append(":\n");
+
+        boolean found = false;
+        for (Task task : tasks) {
+            if (task.isOnDate(date)) {
+                sb.append(task).append("\n");
+                found = true;
+            }
+        }
+        return found ? sb.toString() : "No tasks found on this date.";
+    }
+
+    private String handleFind(String input) {
+        if (input.length() < 5) {
+            return ui.findWarning();
+        }
+        String findDescription = input.substring(5);
+        return ui.find(tasks, findDescription);
+    }
+
+    private String handleMark(String input) {
+        try {
+            int taskNumber = parseTaskNumber(input);
+            tasks.get(taskNumber).markAsDone();
+            updateStorage();
+            return ui.markMessage(tasks.get(taskNumber));
+        } catch (NumberFormatException e) {
+            return ui.showError("Invalid task number. Please enter a number.");
+        } catch (IndexOutOfBoundsException e) {
+            return ui.showError("Task number does not exist. Please check your list.");
+        } catch (Exception e) {
+            return ui.showError("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private String handleUnmark(String input) {
+        try {
+            int taskNumber = parseTaskNumber(input);
+            tasks.get(taskNumber).markAsNotDone();
+            updateStorage();
+            return ui.unmarkMessage(tasks.get(taskNumber));
+        } catch (NumberFormatException e) {
+            return ui.showError("Invalid task number. Please enter a number.");
+        } catch (IndexOutOfBoundsException e) {
+            return ui.showError("Task number does not exist. Please check your list.");
+        } catch (Exception e) {
+            return ui.showError("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private String handleTodo(String input) {
+        if (input.length() < 5) {
+            return ui.todoWarning();
+        }
+        String todoDescription = input.substring(5);
+        tasks.add(new ToDo(todoDescription));
+        updateStorage();
+        return ui.todoMessage(tasks);
+    }
+
+    private String handleDeadline(String input) {
+        try {
+            String[] parts = parseDeadlineInput(input);
+            tasks.add(new Deadline(parts[0], parts[1]));
+            updateStorage();
+            return ui.deadlineMessage(tasks);
+        } catch (IllegalArgumentException e) {
+            return ui.showError(e.getMessage());
+        } catch (DateTimeParseException e) {
+            return ui.showError("Invalid date format. Use: yyyy-MM-dd HHmm");
+        } catch (Exception e) {
+            return ui.showError("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private String handleEvent(String input) {
+        try {
+            String[] parts = parseEventInput(input);
+            tasks.add(new Event(parts[0], parts[1], parts[2]));
+            updateStorage();
+            return ui.eventMessage(tasks);
+        } catch (IllegalArgumentException e) {
+            return ui.showError(e.getMessage());
+        } catch (DateTimeParseException e) {
+            return ui.showError("Invalid date format. Use: yyyy-MM-dd HHmm");
+        } catch (Exception e) {
+            return ui.showError("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private String handleDelete(String input) {
+        try {
+            int taskNumber = parseTaskNumber(input);
+            Task removedTask = tasks.remove(taskNumber);
+            updateStorage();
+            return ui.deleteMessage(removedTask, tasks.size());
+        } catch (Exception e) {
+            return ui.showError(e.getMessage());
+        }
+    }
+
+    private String handleCheck(String input) {
+        try {
+            LocalDate date = LocalDate.parse(input.substring(6).trim(), DATE_ONLY_FORMAT);
+            return getTasksForDate(date);
+        } catch (Exception e) {
+            return "Invalid date format. Use: on yyyy-MM-dd";
+        }
+    }
+
+    private String handleUndo() {
+        if (taskHist.canDeleteHistory()) {
+            tasks = taskHist.deleteHistory();
+            updateStorage();
+            return ui.listMessage(tasks);
+        } else {
+            return "No history found.";
+        }
+    }
+
     public String getResponse(String input) {
         Command command = parser.readCommand(input);
 
@@ -37,153 +199,19 @@ public class Eureka {
             return ui.welcome();
         }
 
-        switch (command) {
-            case BYE:
-                return ui.byeMessage();
-
-            case LIST:
-                return ui.listMessage(tasks);
-
-            case FIND:
-                if (input.length() < 5) {
-                    return ui.findWarning();
-                }
-                String findDescription = input.substring(5);
-                return ui.find(tasks, findDescription);
-
-            case MARK:
-                try {
-                    int markTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
-                    assert markTaskNumber >= 0 && markTaskNumber <= tasks.size(): "Task number out of bounds";
-                    tasks.get(markTaskNumber).markAsDone();
-                    storage.saveTasks(tasks);
-                    taskHist.saveHistory(tasks);
-                    return ui.markMessage(tasks.get(markTaskNumber));
-                } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-                    return ui.showError(e.getMessage());
-                }
-
-            case UNMARK:
-                try {
-                    int unmarkTaskNumber = Integer.parseInt(input.split(" ")[1]) - 1;
-                    assert unmarkTaskNumber >= 0 && unmarkTaskNumber <= tasks.size(): "Task number out of bounds";
-                    tasks.get(unmarkTaskNumber).markAsNotDone();
-                    storage.saveTasks(tasks);
-                    taskHist.saveHistory(tasks);
-                    return ui.unmarkMessage(tasks.get(unmarkTaskNumber));
-                } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-                    return ui.showError(e.getMessage());
-                }
-
-            case TODO:
-                if (input.length() < 5) {
-                    return ui.todoWarning();
-                }
-                String todoDescription = input.substring(5);
-                tasks.add(new ToDo(todoDescription));
-                storage.saveTasks(tasks);
-                taskHist.saveHistory(tasks);
-                return ui.todoMessage(tasks);
-
-            case DEADLINE:
-                try {
-                    if (!input.contains("/by")) {
-                        throw new IllegalArgumentException("Invalid format. Use: "
-                                + "deadline [description] /by [yyyy-MM-dd HHmm]");
-                    }
-                    String[] deadlineParts = input.substring(9).split(" /by ", 2);
-                    if (deadlineParts.length < 2 || deadlineParts[0].isBlank() || deadlineParts[1].isBlank()) {
-                        throw new IllegalArgumentException("Both description and "
-                                + "date are required. Example: deadline Submit report /by 2024-02-01 1800");
-                    }
-                    String deadlineDescription = deadlineParts[0].trim();
-                    String deadlineBy = deadlineParts[1].trim();
-                    tasks.add(new Deadline(deadlineDescription, deadlineBy));
-                    storage.saveTasks(tasks);
-                    taskHist.saveHistory(tasks);
-                    return ui.deadlineMessage(tasks);
-                } catch (IllegalArgumentException e) {
-                    return ui.showError(e.getMessage());
-                }
-
-            case EVENT:
-                try {
-                    if (!input.contains("/from") || !input.contains("/to")) {
-                        throw new IllegalArgumentException("Invalid format. Use: "
-                                + "event [description] /from [start] /to [end]");
-                    }
-                    String[] eventParts = input.substring(6).split(" /from | /to ", 3);
-                    if (eventParts.length < 3 || eventParts[0].isBlank()
-                            || eventParts[1].isBlank() || eventParts[2].isBlank()) {
-                        throw new IllegalArgumentException("Description, start, and end times are required. "
-                                + "Example: event Workshop /from 2024-02-01 0900 /to 2024-02-01 1200");
-                    }
-                    String eventDescription = eventParts[0].trim();
-                    String eventFrom = eventParts[1].trim();
-                    String eventTo = eventParts[2].trim();
-                    tasks.add(new Event(eventDescription, eventFrom, eventTo));
-                    storage.saveTasks(tasks);
-                    taskHist.saveHistory(tasks);
-                    return ui.eventMessage(tasks);
-                } catch (IllegalArgumentException e) {
-                    return ui.showError(e.getMessage());
-                }
-
-            case DELETE:
-                try {
-                    String[] deleteParts = input.split(" ");
-                    if (deleteParts.length != 2) {
-                        throw new IllegalArgumentException("Invalid format. Use: delete [task number]");
-                    }
-                    int deleteTaskNumber = Integer.parseInt(deleteParts[1]) - 1;
-                    if (deleteTaskNumber < 0 || deleteTaskNumber >= tasks.size()) {
-                        throw new IndexOutOfBoundsException("Task number does not exist.");
-                    }
-                    Task removedTask = tasks.remove(deleteTaskNumber);
-                    storage.saveTasks(tasks);
-                    taskHist.saveHistory(tasks);
-                    return ui.deleteMessage(removedTask, tasks.size());
-                } catch (NumberFormatException e) {
-                    return ui.showError("Invalid task number. Please enter a valid number.");
-                } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-                    return ui.showError(e.getMessage());
-                }
-
-            case CHECK:
-                try {
-                    LocalDate date = LocalDate.parse(input.substring(6).trim(), DATE_ONLY_FORMAT);
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Tasks happening on ").append(date.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))).
-                            append(":").append("\n");
-
-                    boolean found = false;
-                    for (Task task : tasks) {
-                        if (task.isOnDate(date)) {
-                            sb.append(task).append("\n");
-                            found = true;
-                        }
-                    }
-
-                    if (!found) {
-                        return "No tasks found on this date.";
-                    } else {
-                        return sb.toString();
-                    }
-                } catch (Exception e) {
-                    return "Invalid date format. Use: on yyyy-MM-dd";
-                }
-
-            case UNDO:
-                if (taskHist.canDeleteHistory()) {
-                    tasks = taskHist.deleteHistory();
-                    storage.saveTasks(tasks);
-                    return ui.listMessage(tasks);
-                } else {
-                    return "No history found.";
-                }
-
-            default:
-                return ui.notUnderstand();
-        }
+        return switch (command) {
+            case BYE -> ui.byeMessage();
+            case LIST -> ui.listMessage(tasks);
+            case FIND -> handleFind(input);
+            case MARK -> handleMark(input);
+            case UNMARK -> handleUnmark(input);
+            case TODO -> handleTodo(input);
+            case DEADLINE -> handleDeadline(input);
+            case EVENT -> handleEvent(input);
+            case DELETE -> handleDelete(input);
+            case CHECK -> handleCheck(input);
+            case UNDO -> handleUndo();
+            default -> ui.notUnderstand();
+        };
     }
 }
