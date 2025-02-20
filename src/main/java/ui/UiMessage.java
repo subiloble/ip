@@ -32,8 +32,8 @@ public class UiMessage {
     /** Returns welcome message. */
     public String welcome() {
         return """
-                Hello! I'm Eureka.
-                What can I do for you?
+                Ah, greetings, my dear pupil!
+                How may I expand your horizons today?
                 """;
     }
 
@@ -47,7 +47,7 @@ public class UiMessage {
     }
 
     public String byeMessage() {
-        return "Bye. Hope to see you again soon!";
+        return "Farewell, dear scholar! Until we meet again!";
     }
 
     /**
@@ -58,7 +58,7 @@ public class UiMessage {
      */
     public String listMessage(TaskList tasks) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Here are the tasks in your list:\n");
+        sb.append("Behold! Your noble tasks await:\n");
         for (int i = 0; i < tasks.size(); i++) {
             sb.append("  ").append(i + 1).append(". ").append(tasks.get(i)).append("\n");
         }
@@ -67,7 +67,7 @@ public class UiMessage {
 
     /** Returns the warning message for finding a task. */
     public String findWarning() {
-        return "Finding cannot work without a part of description.";
+        return "Ah, dear apprentice! Finding cannot work without a clue.";
     }
 
     /**
@@ -80,7 +80,7 @@ public class UiMessage {
      */
     public String find(TaskList tasks, String des) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Here are the matching tasks in your list:");
+        sb.append("Aha! I have scoured the depths of your list and found these matches:");
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).description.contains(des)) {
                 sb.append("  ").append(i + 1).append(". ").append(tasks.get(i)).append("\n");
@@ -97,7 +97,7 @@ public class UiMessage {
      */
 
     public String markMessage(Task task) {
-        return "Nice! I've marked this task as done:\n" + task;
+        return "Splendid! This task has been vanquished with great success:\n" + task;
     }
 
     /** Returns the message for change of status from marked to unmarked for the given task.
@@ -105,12 +105,12 @@ public class UiMessage {
      * @param task Task marked as not done.
      */
     public String unmarkMessage(Task task) {
-        return "OK, I've marked this task as not done yet:\n" + task;
+        return "Oh dear! This task has been resurrected from the realm of completion:\n" + task;
     }
 
     /** Returns the warning message for todo initialisation. */
     public String todoWarning() {
-        return "A todo without a description doesn’t work. Try again with more details!";
+        return "Kindly provide a description so I may assist you properly.";
     }
 
     /**
@@ -121,8 +121,8 @@ public class UiMessage {
      * @return Message.
      */
     public String todoMessage(ArrayList<Task> tasks) {
-        return "Got it. I've added this todo:\n" +
-                tasks.get(tasks.size() - 1) +
+        return "Ah, an intellectual pursuit! A wise choice, my friend.\n" +
+                tasks.get(tasks.size() - 1) + "\n" +
                 "Now you have " + tasks.size() + " tasks in the list.";
     }
 
@@ -134,8 +134,8 @@ public class UiMessage {
      * @return Message.
      */
     public String deadlineMessage(TaskList tasks) {
-        return "Got it. I've added this deadline:\n" +
-                tasks.get(tasks.size() - 1) +
+        return "A deadline, you say? Pressure makes diamonds, my dear apprentice.\n" +
+                tasks.get(tasks.size() - 1) + "\n" +
                 "Now you have " + tasks.size() + " tasks in the list.";
     }
 
@@ -147,8 +147,8 @@ public class UiMessage {
      * @return Message.
      */
     public String eventMessage(TaskList tasks) {
-        return "Got it. I've added this event:\n" +
-                tasks.get(tasks.size() - 1) +
+        return "Ah, an event! How delightful! I have inscribed it in the grand tome of schedules:\n" +
+                tasks.get(tasks.size() - 1) + "\n" +
                 "Now you have " + tasks.size() + " tasks in the list.";
     }
 
@@ -161,13 +161,13 @@ public class UiMessage {
      * @return Message.
      */
     public String deleteMessage(Task removedTask, int size) {
-        return "Noted. I've removed this task:\n" +
-                removedTask +
+        return "Task annihilated! If only all life's problems had a delete button.\n" +
+                removedTask + "\n" +
                 "Now you have " + size + " tasks in the list.";
     }
 
     /** Returns the message for commands not identified*/
     public String notUnderstand() {
-        return "Sorry, I didn’t get that. Could you try something else?";
+        return "A peculiar request! Perhaps you meant something else?";
     }
 }
