@@ -25,6 +25,7 @@ public class Main extends Application {
             stage.setScene(scene);
             fxmlLoader.<MainWindow>getController().setEureka(eureka);  // inject the Eureka instance
             fxmlLoader.<MainWindow>getController().welcome();  // load greetings
+            stage.setTitle("Eureka Chatbot"); // Set the window title here
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

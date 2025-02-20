@@ -56,10 +56,19 @@ public class MainWindow extends AnchorPane {
     private void handleUserInput() {
         String input = userInput.getText();
         String response = eureka.getResponse(input);
-        dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input, userImage),
-                DialogBox.getEurekaDialog(response, eurekaImage)
-        );
+        if (response.toLowerCase().startsWith("error") ||
+                response.toLowerCase().startsWith("invalid") ||
+                response.toLowerCase().startsWith("sorry")) {
+            dialogContainer.getChildren().addAll(
+                    DialogBox.getUserDialog(input, userImage),
+                    DialogBox.getErrorDialog(response, eurekaImage)
+            );
+        } else {
+            dialogContainer.getChildren().addAll(
+                    DialogBox.getUserDialog(input, userImage),
+                    DialogBox.getEurekaDialog(response, eurekaImage)
+            );
+        }
         userInput.clear();
     }
 }
