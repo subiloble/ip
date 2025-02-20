@@ -2,6 +2,8 @@ package task;
 
 import java.util.ArrayList;
 
+/** Task history. */
+
 public class TaskHistory {
     private final ArrayList<TaskList> history;
 
@@ -12,7 +14,7 @@ public class TaskHistory {
     }
 
     public void saveHistory(TaskList tasks) {
-        this.history.add(tasks);
+        this.history.add((TaskList) tasks.clone());
     }
 
     public TaskList deleteHistory() {

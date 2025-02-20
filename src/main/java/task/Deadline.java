@@ -6,6 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
+/**
+ * Deadline task.
+ */
+
 public class Deadline extends Task {
     private final LocalDateTime by;
     private static final DateTimeFormatter INPUT_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
@@ -19,6 +23,7 @@ public class Deadline extends Task {
                 ));
     }
 
+    /** Check null value */
     private Optional<LocalDateTime> parseDate(String dateStr) {
         try {
             return Optional.of(LocalDateTime.parse(dateStr, INPUT_FORMATTER));

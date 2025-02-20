@@ -29,7 +29,7 @@ class EventTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             new Event("Project presentation", "10-02-2025 0900", "2025-02-10 1100"); // Wrong date format
         });
-        assertEquals("Invalid date format. Please use 'yyyy-MM-dd HHmm' (e.g., 2025-02-15 2359).", exception.getMessage());
+        assertEquals("Invalid 'from' date format.", exception.getMessage());
     }
 
     @Test

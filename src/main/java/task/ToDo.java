@@ -2,6 +2,10 @@ package task;
 
 import java.time.LocalDate;
 
+/**
+ * ToDo task.
+ */
+
 public class ToDo extends Task {
     public ToDo(String description) {
         super(description);

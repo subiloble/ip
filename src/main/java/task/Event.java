@@ -6,6 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
+/**
+ * Event task.
+ */
+
 public class Event extends Task {
     private final LocalDateTime from;
     private final LocalDateTime to;
@@ -20,6 +24,7 @@ public class Event extends Task {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid 'to' date format."));
     }
 
+    /** Check null value */
     private Optional<LocalDateTime> parseDate(String dateStr) {
         try {
             return Optional.of(LocalDateTime.parse(dateStr, INPUT_FORMATTER));
@@ -28,6 +33,7 @@ public class Event extends Task {
         }
     }
 
+    @Override
     public boolean isOnDate(LocalDate date) {
         return !date.isBefore(from.toLocalDate()) && !date.isAfter(to.toLocalDate());
     }

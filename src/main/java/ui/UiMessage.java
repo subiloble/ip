@@ -75,6 +75,8 @@ public class UiMessage {
      *
      * @param tasks Task list.
      * @param des Description keywords.
+     *
+     * @return Message.
      */
     public String find(TaskList tasks, String des) {
         StringBuilder sb = new StringBuilder();
@@ -115,6 +117,8 @@ public class UiMessage {
      * Returns the completion message for todo initialisation.
      *
      * @param tasks Task list where a todo task is added.
+     *
+     * @return Message.
      */
     public String todoMessage(ArrayList<Task> tasks) {
         return "Got it. I've added this todo:\n" +
@@ -126,6 +130,8 @@ public class UiMessage {
      * Returns the completion message for deadline initialisation.
      *
      * @param tasks Task list where a deadline task is added.
+     *
+     * @return Message.
      */
     public String deadlineMessage(TaskList tasks) {
         return "Got it. I've added this deadline:\n" +
@@ -137,6 +143,8 @@ public class UiMessage {
      * Returns the completion message for event initialisation.
      *
      * @param tasks Task list where an event task is added.
+     *
+     * @return Message.
      */
     public String eventMessage(TaskList tasks) {
         return "Got it. I've added this event:\n" +
@@ -149,6 +157,8 @@ public class UiMessage {
      *
      * @param removedTask Task being deleted.
      * @param size Size of the task list where a task is deleted.
+     *
+     * @return Message.
      */
     public String deleteMessage(Task removedTask, int size) {
         return "Noted. I've removed this task:\n" +

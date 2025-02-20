@@ -25,7 +25,7 @@ public class Eureka {
     private static final DateTimeFormatter DATE_ONLY_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public TaskList tasks = new TaskList(storage.loadTasks());
-    public TaskHistory taskHist = new TaskHistory(tasks);
+    public TaskHistory taskHist = new TaskHistory((TaskList) tasks.clone());
 
     public String getResponse(String input) {
         Command command = parser.readCommand(input);
@@ -176,6 +176,7 @@ public class Eureka {
             case UNDO:
                 if (taskHist.canDeleteHistory()) {
                     tasks = taskHist.deleteHistory();
+                    storage.saveTasks(tasks);
                     return ui.listMessage(tasks);
                 } else {
                     return "No history found.";
