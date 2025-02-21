@@ -1,4 +1,4 @@
-# Duke User Guide
+# Eureka User Guide
 
 ## Introduction
 
