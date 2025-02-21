@@ -185,7 +185,7 @@ public class Eureka {
             updateStorage();
             return ui.listMessage(tasks);
         } else {
-            return "No history found.";
+            return "No history found to be restored.";
         }
     }
 
