@@ -47,6 +47,7 @@ public class UiMessage {
     }
 
     public String byeMessage() {
+        System.exit(0);
         return "Farewell, dear scholar! Until we meet again!";
     }
 

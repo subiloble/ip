@@ -193,7 +193,7 @@ public class Eureka {
         Command command = parser.readCommand(input);
 
         if (input.equals("test")) {
-            return "Nice! GUI is Working.";
+            return "Last operation undone successfully.\nAdd 111";
         }
         if (input.equals("logo")) {
             return ui.welcome();
