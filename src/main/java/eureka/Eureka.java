@@ -189,6 +189,10 @@ public class Eureka {
         }
     }
 
+    private String handleHelp() {
+        return "Refer to https://subiloble.github.io/ip.";
+    }
+
     public String getResponse(String input) {
         Command command = parser.readCommand(input);
 
@@ -211,6 +215,7 @@ public class Eureka {
             case DELETE -> handleDelete(input);
             case CHECK -> handleCheck(input);
             case UNDO -> handleUndo();
+            case HELP -> handleHelp();
             default -> ui.notUnderstand();
         };
     }

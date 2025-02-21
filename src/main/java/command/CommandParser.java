@@ -32,6 +32,8 @@ public class CommandParser {
             return Command.CHECK;
         } else if (userInput.startsWith("undo")) {
             return Command.UNDO;
+        } else if (userInput.startsWith("help")) {
+            return Command.HELP;
         } else {
             return Command.UNKNOWN;
         }
