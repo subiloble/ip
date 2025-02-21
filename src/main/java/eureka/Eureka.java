@@ -78,7 +78,7 @@ public class Eureka {
                 found = true;
             }
         }
-        return found ? sb.toString() : "No tasks found on this date.";
+        return found ? sb.toString() : "No task found on this date.";
     }
 
     private String handleFind(String input) {
